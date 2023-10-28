@@ -1,42 +1,39 @@
+package org.home.company;
 
+import com.github.javafaker.Faker;
+import org.assertj.core.api.SoftAssertions;
+import org.home.company.data.AppResponseData;
 import io.qameta.allure.Description;
 import io.qameta.allure.Link;
 import io.qameta.allure.Owner;
-
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import page.LoginPage;
 
 import java.util.Map;
 
+import static org.home.company.data.TestData.*;
 import static io.restassured.RestAssured.given;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertTrue;
 
 
 public class SimpleTest {
-    private final String INVALID_PHONE_NUMBER = "1234567890";
-    private final String VALID_PASSWORD = "1234567890";
-    private final String BASE_URL = "http://tl.af-ctf.ru/#inputForAuth";
-    private final String VALID_NAME = "Evgeniya";
-    private final String VALID_EMAIL = "eapiskunova@gmail.com";
 
+    private final static Faker faker = new Faker();
+    private final static int PHONE_N_LEN = 9;
 
     @Owner("Zhenya")
     @Link(name = "link", url = "http://tl.af-ctf.ru/#inputForAuth")
     @Description("unsuccess login")
     @Test
     public void testUserGetsMessageOnInvalidPhoneNumberInput() {
-        new LoginPage(BASE_URL)
-                .putName(VALID_NAME)
-                .putEmail(VALID_EMAIL)
-                .putPhoneNumber(INVALID_PHONE_NUMBER)
-                .putPasswordField(VALID_PASSWORD)
-                .confirmPassowrd(VALID_PASSWORD)
+        new LoginPage(BASE_URL.val)
+                .putName(VALID_NAME.val)
+                .putEmail(VALID_EMAIL.val)
+                .putPhoneNumber(INVALID_PHONE_NUMBER.val)
+                .putPasswordField(VALID_PASSWORD.val)
+                .confirmPassowrd(VALID_PASSWORD.val)
                 .clickSubmit()
                 .assertErrorMessageVisible();
-
     }
 
     @Owner("Zhenya")
@@ -44,17 +41,16 @@ public class SimpleTest {
     @Description("unsuccess login")
     @Test
     public void testUserGetsMessageOnInvalidPasswordInput() {
-        new LoginPage(BASE_URL)
-                .putName(VALID_NAME)
-                .putEmail(VALID_EMAIL)
-                .putPhoneNumber(LoginPage.randomPhoneNumber())
-                .putPasswordField(LoginPage.randomInvalidPassword())
-                .confirmPassowrd(LoginPage.randomInvalidPassword())
+        new LoginPage(BASE_URL.val)
+                .putName(VALID_NAME.val)
+                .putEmail(VALID_EMAIL.val)
+                .putPhoneNumber(faker.phoneNumber().subscriberNumber(PHONE_N_LEN))
+                .putPasswordField(faker.business().creditCardNumber())
+                .confirmPassowrd(faker.business().creditCardNumber())
                 .clickCheckBox()
                 .clickCheckBox2()
                 .clickSubmit()
                 .assertErrorMessage2Visible();
-
     }
 
     @Owner("Zhenya")
@@ -83,11 +79,15 @@ public class SimpleTest {
                 .then()
                 .extract()
                 .response();
-        assertEquals(response.statusCode(), 200);
-        assertTrue(response.jsonPath().getBoolean("type"));
-        assertEquals("Сейчас на ваш телефон поступит звонок, последние 4 цифры являются кодом",
-                response.jsonPath().getString("text"));
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(response.statusCode()).as("status code").isEqualTo(200);
+        AppResponseData responseData = response.as(AppResponseData.class);
+        softly.assertThat(responseData.getType()).as("data type").isTrue();
+        softly.assertThat(responseData.getText()).as("data text")
+                .isEqualTo("Сейчас на ваш телефон поступит звонок, последние 4 цифры являются кодом");
+        softly.assertAll();
     }
+
     @Owner("Zhenya")
     @Link(name = "link", url = "http://tl.af-ctf.ru/#inputForAuth")
     @Description("success login")
@@ -114,9 +114,11 @@ public class SimpleTest {
                 .then()
                 .extract()
                 .response();
-        assertEquals(response.statusCode(), 200);
-        assertFalse(response.jsonPath().getBoolean("type"));
-        assertEquals("\"Сотовый номер\" должен содержать только числа или +",
-                response.jsonPath().getString("message"));
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(response.statusCode()).as("status code").isEqualTo(200);
+        softly.assertThat(response.jsonPath().getBoolean("type")).as("data type").isFalse();
+        softly.assertThat(response.jsonPath().getString("message")).as("data text")
+                .isEqualTo("\"Сотовый номер\" должен содержать только числа или +");
+        softly.assertAll();
     }
 }

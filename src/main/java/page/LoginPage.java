@@ -4,7 +4,6 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
-import java.util.Random;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
 
@@ -80,24 +79,6 @@ public class LoginPage  {
     public void assertErrorMessage2Visible(){
         errorMessage2.shouldBe(Condition.visible);
         errorMessage2.shouldBe(Condition.text(ERROR_MESSAGE2));
-    }
-    public static String randomPhoneNumber() {
-        StringBuilder sb = new StringBuilder();
-        Random rand = new Random();
-        sb.append(7);
-        for (int i = 0; i < 10; i++) {
-            sb.append(rand.nextInt(10));
-        }
-        return sb.toString();
-    }
-    public static String randomInvalidPassword() {
-        StringBuilder sb = new StringBuilder();
-        Random rand = new Random();
-        sb.append(1);
-        for (int i = 0; i < 10; i++) {
-            sb.append(rand.nextInt(5));
-        }
-        return sb.toString();
     }
 
 }
