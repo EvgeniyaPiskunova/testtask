@@ -8,28 +8,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Builder
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AppResponseData {
+public class DataItem {
+    @SerializedName("id")
+    private int id;
 
-    @SerializedName("page")
-    private int page;
+    @SerializedName("email")
+    private String email;
 
-    @SerializedName("per_page")
-    private int per_page;
+    @SerializedName("first_name")
+    private String first_name;
 
-    @SerializedName("total")
-    private int total;
+    @SerializedName("last_name")
+    private String last_name;
 
-    @SerializedName("total_pages")
-    private int total_pages;
-
-    @SerializedName("data")
-    private List<DataItem> data;
+    @SerializedName("avatar")
+    private String avatar;
 }

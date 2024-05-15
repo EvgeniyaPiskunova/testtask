@@ -16,20 +16,17 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AppResponseData {
+public class ResponseData {
 
-    @SerializedName("page")
-    private int page;
+    @SerializedName("name")
+    private String name;
 
-    @SerializedName("per_page")
-    private int per_page;
+    @SerializedName("job")
+    private String job;
 
-    @SerializedName("total")
-    private int total;
+    @SerializedName("id")
+    private String id;
 
-    @SerializedName("total_pages")
-    private int total_pages;
-
-    @SerializedName("data")
-    private List<DataItem> data;
+    @SerializedName("createdAt")
+    private String createdAt;
 }
